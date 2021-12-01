@@ -1,13 +1,10 @@
-use std::io;
-use std::io::BufRead;
+// Solutions for day1 of Advent of Code
 
-pub fn p1() {
-    let mut prev_value: Option<i32> = None;
-    let mut count: i32 = 0;
+pub fn p1(input: Vec<u32>) {
+    let mut prev_value: Option<u32> = None;
+    let mut count: u32 = 0;
 
-    let stdin = io::stdin();
-    for line in stdin.lock().lines() {
-        let value: i32 = line.unwrap().parse::<i32>().unwrap();
+    for value in input {
         if prev_value.is_some() && prev_value.unwrap() < value {
             count = count + 1;
         }
@@ -17,19 +14,16 @@ pub fn p1() {
     println!("{}", count);
 }
 
-pub fn p2() {
-    let mut v0: Option<i32> = None; // Sum of previous three numbers
-    let mut v1: Option<i32> = None; // Sum of previous two numbers
-    let mut v2: Option<i32> = None; // Previous number
-    let mut count: i32 = 0;
+pub fn p2(input: Vec<u32>) {
+    let mut v0: Option<u32> = None; // Sum of previous three numbers
+    let mut v1: Option<u32> = None; // Sum of previous two numbers
+    let mut v2: Option<u32> = None; // Previous number
+    let mut count: u32 = 0;
 
-    let stdin = io::stdin();
-    for line in stdin.lock().lines() {
-        let value: i32 = line.unwrap().parse::<i32>().unwrap();
-
+    for value in input {
         // Calculate the new values for the numbers
-        let mut new_v0: Option<i32> = None;
-        let mut new_v1: Option<i32> = None;
+        let mut new_v0: Option<u32> = None;
+        let mut new_v1: Option<u32> = None;
 
         if v2.is_some() {
             new_v1 = Some(v2.unwrap() + value);
