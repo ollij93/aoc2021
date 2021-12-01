@@ -32,8 +32,8 @@ fn main() {
     }
 
     match (day, part) {
-        (1, 1) => { day1::p1(input_as_u32()); }
-        (1, 2) => { day1::p2(input_as_u32()); }
+        (1, 1) => { println!("{}", day1::p1(input_as_u32())); }
+        (1, 2) => { println!("{}", day1::p2(input_as_u32())); }
         _ => { println!("Day/Part combo not yet implemented."); }
     }
 }
