@@ -1,0 +1,6 @@
+# Generated files
+/target/
+Cargo.lock
+
+# Temporary files
+*.swp
