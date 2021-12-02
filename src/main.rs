@@ -1,5 +1,6 @@
 extern crate argparse;
 
+mod common;
 mod day1;
 mod day2;
 
@@ -32,22 +33,24 @@ fn input_as_u32() -> Vec<u32> {
 }
 
 fn main() {
-    let mut day: i32 = 1;
-    let mut part: i32 = 1;
+    let mut day: u32 = 0;
 
     {
         let mut ap = ArgumentParser::new();
         ap.set_description("Run Advent of Code solutions.");
-        ap.refer(&mut day).add_option(&["-d", "--day"], Store, "Advent day");
-        ap.refer(&mut part).add_option(&["-p", "--part"], Store, "Part");
+        ap.refer(&mut day).add_option(
+            &["-d", "--day"],
+            Store,
+            "Advent day to run, if not specified all are run in sequence",
+        );
         ap.parse_args_or_exit();
     }
 
-    match (day, part) {
-        (1, 1) => { println!("{}", day1::p1(input_as_u32())); }
-        (1, 2) => { println!("{}", day1::p2(input_as_u32())); }
-        (2, 1) => { println!("{}", day2::p1(input_as_string()))}
-        (2, 2) => { println!("{}", day2::p2(input_as_string()))}
-        _ => { println!("Day/Part combo not yet implemented."); }
+    match day {
+        1 => day1::run(input_as_u32()),
+        2 => day2::run(input_as_string()),
+        _ => {
+            println!("Day not yet implemented.");
+        }
     }
 }
