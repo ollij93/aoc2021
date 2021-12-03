@@ -35,20 +35,19 @@ fn p1(input: &Vec<String>) -> u32 {
     return gamma * epsilon;
 }
 
-fn filter_on_majority<F>(mut possibles: Vec<Vec<bool>>, fltr: F, size: usize) -> Vec<bool>
+fn filter_on_majority<F>(possibles: Vec<Vec<bool>>, fltr: F, size: usize) -> Vec<bool>
 where
     F: Fn(bool, bool) -> bool,
 {
-    for i in 0..size {
-        let counts = count_on_bits(&possibles);
-        let majorities = get_majorities(&counts, possibles.len() as u32);
-        possibles = possibles
-            .iter()
+    let ret = (0..size).fold(possibles, |pos, i| {
+        let counts = count_on_bits(&pos);
+        let majorities = get_majorities(&counts, pos.len() as u32);
+        pos.iter()
             .filter(|x| fltr(x[i], majorities[i]))
             .map(|x| x.to_owned())
-            .collect();
-    }
-    possibles[0].to_owned()
+            .collect::<Vec<Vec<bool>>>()
+    });
+    ret[0].to_owned()
 }
 
 fn p2(input: &Vec<String>) -> u32 {
