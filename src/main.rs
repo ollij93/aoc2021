@@ -10,27 +10,19 @@ use std::io;
 use std::io::BufRead;
 
 fn input_as_string() -> Vec<String> {
-    let mut vec: Vec<String> = Vec::new();
-    let stdin = io::stdin();
-
-    for line in stdin.lock().lines() {
-        vec.push(line.unwrap());
-    }
-
-    return vec;
+    io::stdin()
+        .lock()
+        .lines()
+        .map(|line| line.unwrap())
+        .collect()
 }
 
 // Get input lines from stdin as a u32 vector
 fn input_as_u32() -> Vec<u32> {
-    let input = input_as_string();
-    let mut vec: Vec<u32> = Vec::new();
-
-    for line in input {
-        let value: u32 = line.parse::<u32>().unwrap();
-        vec.push(value);
-    }
-
-    return vec;
+    input_as_string()
+        .iter()
+        .map(|line| line.parse::<u32>().unwrap())
+        .collect()
 }
 
 fn main() {

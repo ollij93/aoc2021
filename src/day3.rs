@@ -7,31 +7,16 @@ fn str_to_binary(input: &String) -> Vec<bool> {
 }
 
 fn binary_to_u32(input: &Vec<bool>) -> u32 {
-    let mut ret = 0;
-    for b in input {
-        ret = ret * 2;
-        if *b {
-            ret += 1;
-        }
-    }
-    return ret;
+    input.iter().fold(0, |ret, cur| ret * 2 + (*cur as u32))
 }
 
 fn count_on_bits(input: &Vec<Vec<bool>>) -> Vec<u32> {
-    let mut ret: Vec<u32> = Vec::new();
-
-    for vec in input {
-        // Make sure our vector is long enough for this length of input
-        while ret.len() < vec.len() {
-            ret.push(0);
-        }
-
-        for i in 0..vec.len() {
-            ret[i] += vec[i] as u32;
-        }
-    }
-
-    return ret;
+    input[1..].iter().fold(
+        // Initialise using the first element to determine the size of vector we need
+        input[0].iter().map(|b| *b as u32).collect(),
+        // Add onto the existing counts for each binary vector we get
+        |counts, vec| counts.iter().zip(vec).map(|(c, b)| c + *b as u32).collect(),
+    )
 }
 
 fn get_majorities(input: &Vec<u32>, size: u32) -> Vec<bool> {
@@ -50,41 +35,37 @@ fn p1(input: &Vec<String>) -> u32 {
     return gamma * epsilon;
 }
 
+fn filter_on_majority<F>(mut possibles: Vec<Vec<bool>>, fltr: F, size: usize) -> Vec<bool>
+where
+    F: Fn(bool, bool) -> bool,
+{
+    for i in 0..size {
+        let counts = count_on_bits(&possibles);
+        let majorities = get_majorities(&counts, possibles.len() as u32);
+        possibles = possibles
+            .iter()
+            .filter(|x| fltr(x[i], majorities[i]))
+            .map(|x| x.to_owned())
+            .collect();
+    }
+    possibles[0].to_owned()
+}
+
 fn p2(input: &Vec<String>) -> u32 {
+    let size = input[0].len();
     let binary_input: Vec<Vec<bool>> = input.iter().map(|s| str_to_binary(s)).collect();
-    let mut oxygen_possibles = binary_input.to_owned();
+    let oxygen = binary_to_u32(&filter_on_majority(
+        binary_input.to_owned(),
+        |b, maj| b == maj,
+        size,
+    ));
+    let co2 = binary_to_u32(&filter_on_majority(
+        binary_input.to_owned(),
+        |b, maj| b != maj,
+        size,
+    ));
 
-    let mut i = 0;
-    while oxygen_possibles.len() > 1 {
-        let counts = count_on_bits(&oxygen_possibles);
-        let majorities = get_majorities(&counts, oxygen_possibles.len() as u32);
-        let v = majorities[i];
-        oxygen_possibles = oxygen_possibles
-            .iter()
-            .filter(|x| x[i] == v)
-            .map(|x| x.to_owned())
-            .collect();
-        i += 1;
-    }
-
-    let mut c02_possibles = binary_input.to_owned();
-    i = 0;
-    while c02_possibles.len() > 1 {
-        let counts = count_on_bits(&c02_possibles);
-        let majorities = get_majorities(&counts, c02_possibles.len() as u32);
-        let v = majorities[i];
-        c02_possibles = c02_possibles
-            .iter()
-            .filter(|x| x[i] != v)
-            .map(|x| x.to_owned())
-            .collect();
-        i += 1;
-    }
-
-    let oxygen = binary_to_u32(&oxygen_possibles[0]);
-    let c02 = binary_to_u32(&c02_possibles[0]);
-
-    return oxygen * c02;
+    return oxygen * co2;
 }
 
 pub fn run(input: Vec<String>) {

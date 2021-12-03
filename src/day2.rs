@@ -11,13 +11,11 @@ enum SubmarineCommand {
 fn parse_pairs(input: Vec<(String, u32)>) -> Vec<SubmarineCommand> {
     input
         .iter()
-        .map(|(cmd, n)| {
-            match cmd.as_ref() {
-                "forward" => SubmarineCommand::Forward(*n),
-                "down" => SubmarineCommand::Down(*n),
-                "up" => SubmarineCommand::Up(*n),
-                x => panic!("'{}' is not a valid command", x),
-            }
+        .map(|(cmd, n)| match cmd.as_ref() {
+            "forward" => SubmarineCommand::Forward(*n),
+            "down" => SubmarineCommand::Down(*n),
+            "up" => SubmarineCommand::Up(*n),
+            x => panic!("'{}' is not a valid command", x),
         })
         .collect()
 }
@@ -36,20 +34,12 @@ pub fn p1(input: &Vec<String>) -> u32 {
     let pairs = parse_input(input);
     let commands = parse_pairs(pairs);
 
-    let mut pos: (u32, u32) = (0, 0);
-    for command in commands {
-        match command {
-            SubmarineCommand::Forward(x) => {
-                pos = (pos.0 + x, pos.1);
-            }
-            SubmarineCommand::Down(x) => {
-                pos = (pos.0, pos.1 + x);
-            }
-            SubmarineCommand::Up(x) => {
-                pos = (pos.0, pos.1 - x);
-            }
-        }
-    }
+    let pos = commands.iter().fold((0, 0), |pos, cmd| match cmd {
+        SubmarineCommand::Forward(x) => (pos.0 + x, pos.1),
+        SubmarineCommand::Down(x) => (pos.0, pos.1 + x),
+        SubmarineCommand::Up(x) => (pos.0, pos.1 - x),
+    });
+
     return pos.0 * pos.1;
 }
 
@@ -57,21 +47,14 @@ pub fn p2(input: &Vec<String>) -> u32 {
     let pairs = parse_input(input);
     let commands = parse_pairs(pairs);
 
-    let mut pos: (u32, u32) = (0, 0);
-    let mut aim: u32 = 0;
-    for command in commands {
-        match command {
-            SubmarineCommand::Forward(x) => {
-                pos = (pos.0 + x, pos.1 + aim * x);
-            }
-            SubmarineCommand::Down(x) => {
-                aim += x;
-            }
-            SubmarineCommand::Up(x) => {
-                aim -= x;
-            }
-        }
-    }
+    let (_, pos) = commands
+        .iter()
+        .fold((0, (0, 0)), |(aim, pos), cmd| match cmd {
+            SubmarineCommand::Forward(x) => (aim, (pos.0 + x, pos.1 + aim * x)),
+            SubmarineCommand::Down(x) => (aim + x, pos),
+            SubmarineCommand::Up(x) => (aim - x, pos),
+        });
+
     return pos.0 * pos.1;
 }
 
