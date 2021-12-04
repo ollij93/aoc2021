@@ -4,6 +4,7 @@ mod common;
 mod day1;
 mod day2;
 mod day3;
+mod day4;
 
 use argparse::{ArgumentParser, Store};
 use std::io;
@@ -43,6 +44,7 @@ fn main() {
         1 => day1::run(input_as_u32()),
         2 => day2::run(input_as_string()),
         3 => day3::run(input_as_string()),
+        4 => day4::run(input_as_string()),
         _ => {
             println!("Day not yet implemented.");
         }
