@@ -5,6 +5,8 @@ mod day1;
 mod day2;
 mod day3;
 mod day4;
+mod day5;
+mod day6;
 
 use argparse::{ArgumentParser, Store};
 use std::io;
@@ -23,6 +25,13 @@ fn input_as_u32() -> Vec<u32> {
     input_as_string()
         .iter()
         .map(|line| line.parse::<u32>().unwrap())
+        .collect()
+}
+
+fn input_as_u64_from_list() -> Vec<u64> {
+    input_as_string()[0]
+        .split(",")
+        .map(|s| s.parse::<u64>().unwrap())
         .collect()
 }
 
@@ -45,6 +54,8 @@ fn main() {
         2 => day2::run(input_as_string()),
         3 => day3::run(input_as_string()),
         4 => day4::run(input_as_string()),
+        5 => day5::run(input_as_string()),
+        6 => day6::run(input_as_u64_from_list()),
         _ => {
             println!("Day not yet implemented.");
         }

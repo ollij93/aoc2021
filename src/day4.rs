@@ -1,21 +1,16 @@
-// Solutions for day3 of Advent of Code
+// Solutions for day4 of Advent of Code
 
 use super::common::run_and_print_time;
 
 mod board;
 mod game;
 
-use game::parse_game;
-use game::BingoGame;
-
 fn p1(input: &Vec<String>) -> u32 {
-    let mut game: BingoGame = parse_game(input);
-    game.run()[0]
+    game::parse_game(input).run()[0]
 }
 
 fn p2(input: &Vec<String>) -> u32 {
-    let mut game: BingoGame = parse_game(input);
-    *game.run().last().unwrap()
+    *game::parse_game(input).run().last().unwrap()
 }
 
 pub fn run(input: Vec<String>) {

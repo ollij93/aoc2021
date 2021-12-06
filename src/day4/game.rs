@@ -19,7 +19,7 @@ impl std::fmt::Display for BingoGame {
 }
 
 impl BingoGame {
-    pub fn run(&mut self) -> Vec<u32> {
+    pub fn run(mut self) -> Vec<u32> {
         let mut ret = Vec::new();
         for num in &self.numbers {
             self.boards = self
