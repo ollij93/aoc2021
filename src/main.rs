@@ -30,7 +30,7 @@ fn input_as_u32() -> Vec<u32> {
 
 fn input_as_u64_from_list() -> Vec<u64> {
     input_as_string()[0]
-        .split(",")
+        .split(',')
         .map(|s| s.parse::<u64>().unwrap())
         .collect()
 }

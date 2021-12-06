@@ -2,15 +2,15 @@
 
 use super::common::run_and_print_time;
 
-fn str_to_binary(input: &String) -> Vec<bool> {
+fn str_to_binary(input: &str) -> Vec<bool> {
     input.chars().map(|c| c == '1').collect::<Vec<bool>>()
 }
 
-fn binary_to_u32(input: &Vec<bool>) -> u32 {
+fn binary_to_u32(input: &[bool]) -> u32 {
     input.iter().fold(0, |ret, cur| ret * 2 + (*cur as u32))
 }
 
-fn count_on_bits(input: &Vec<Vec<bool>>) -> Vec<u32> {
+fn count_on_bits(input: &[Vec<bool>]) -> Vec<u32> {
     input[1..].iter().fold(
         // Initialise using the first element to determine the size of vector we need
         input[0].iter().map(|b| *b as u32).collect(),
@@ -19,12 +19,12 @@ fn count_on_bits(input: &Vec<Vec<bool>>) -> Vec<u32> {
     )
 }
 
-fn get_majorities(input: &Vec<u32>, size: u32) -> Vec<bool> {
+fn get_majorities(input: &[u32], size: u32) -> Vec<bool> {
     input.iter().map(|x| x * 2 >= size).collect::<Vec<bool>>()
 }
 
-fn p1(input: &Vec<String>) -> u32 {
-    let binary_input = &input.iter().map(|s| str_to_binary(s)).collect();
+fn p1(input: &[String]) -> u32 {
+    let binary_input = &input.iter().map(|s| str_to_binary(s)).collect::<Vec<Vec<bool>>>();
     let counts = count_on_bits(binary_input);
     let majorities = get_majorities(&counts, (input.len() as u32) / 2);
     let gamma = binary_to_u32(&majorities);
@@ -32,7 +32,7 @@ fn p1(input: &Vec<String>) -> u32 {
 
     println!("{:?} {:?}", gamma, epsilon);
 
-    return gamma * epsilon;
+    gamma * epsilon
 }
 
 fn filter_on_majority<F>(possibles: Vec<Vec<bool>>, fltr: F, size: usize) -> Vec<bool>
@@ -50,7 +50,7 @@ where
     ret[0].to_owned()
 }
 
-fn p2(input: &Vec<String>) -> u32 {
+fn p2(input: &[String]) -> u32 {
     let size = input[0].len();
     let binary_input: Vec<Vec<bool>> = input.iter().map(|s| str_to_binary(s)).collect();
     let oxygen = binary_to_u32(&filter_on_majority(
@@ -59,12 +59,12 @@ fn p2(input: &Vec<String>) -> u32 {
         size,
     ));
     let co2 = binary_to_u32(&filter_on_majority(
-        binary_input.to_owned(),
+        binary_input,
         |b, maj| b != maj,
         size,
     ));
 
-    return oxygen * co2;
+    oxygen * co2
 }
 
 pub fn run(input: Vec<String>) {
@@ -94,12 +94,12 @@ mod tests {
 
     #[test]
     fn test_get_majorities() {
-        assert_eq!(get_majorities(&vec![], 10), vec![]);
+        assert_eq!(get_majorities(&[], 10), vec![]);
         assert_eq!(
-            get_majorities(&vec![1, 50, 20], 50),
+            get_majorities(&[1, 50, 20], 50),
             vec![false, true, false]
         );
-        assert_eq!(get_majorities(&vec![1], 2), vec![true]);
-        assert_eq!(get_majorities(&vec![1], 3), vec![false])
+        assert_eq!(get_majorities(&[1], 2), vec![true]);
+        assert_eq!(get_majorities(&[1], 3), vec![false])
     }
 }

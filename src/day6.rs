@@ -4,7 +4,7 @@ use super::common::run_and_print_time;
 
 struct FishSchool([u64; 9]);
 
-fn create_school(input: &Vec<u64>) -> FishSchool {
+fn create_school(input: &[u64]) -> FishSchool {
     FishSchool(input.iter().fold([0; 9], |mut school: [u64; 9], fish| {
         school[*fish as usize] += 1;
         school
@@ -26,13 +26,13 @@ fn simulate_day(school: &FishSchool) -> FishSchool {
 fn p1(input: Vec<u64>) -> u64 {
     let init_school = create_school(&input);
     let final_school = (0..80).fold(init_school, |fish, _| simulate_day(&fish));
-    final_school.0.iter().fold(0, |a, b| a + b)
+    final_school.0.iter().sum()
 }
 
 fn p2(input: Vec<u64>) -> u64 {
     let init_school = create_school(&input);
     let final_school = (0..256).fold(init_school, |fish, _| simulate_day(&fish));
-    final_school.0.iter().fold(0, |a, b| a + b)
+    final_school.0.iter().sum()
 }
 
 pub fn run(input: Vec<u64>) {

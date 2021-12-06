@@ -5,11 +5,11 @@ use super::common::run_and_print_time;
 mod board;
 mod game;
 
-fn p1(input: &Vec<String>) -> u32 {
+fn p1(input: &[String]) -> u32 {
     game::parse_game(input).run()[0]
 }
 
-fn p2(input: &Vec<String>) -> u32 {
+fn p2(input: &[String]) -> u32 {
     *game::parse_game(input).run().last().unwrap()
 }
 

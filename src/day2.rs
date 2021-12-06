@@ -20,7 +20,7 @@ fn parse_pairs(input: Vec<(String, u32)>) -> Vec<SubmarineCommand> {
         .collect()
 }
 
-fn parse_input(input: &Vec<String>) -> Vec<(String, u32)> {
+fn parse_input(input: &[String]) -> Vec<(String, u32)> {
     input
         .iter()
         .map(|l| {
@@ -30,7 +30,7 @@ fn parse_input(input: &Vec<String>) -> Vec<(String, u32)> {
         .collect()
 }
 
-pub fn p1(input: &Vec<String>) -> u32 {
+pub fn p1(input: &[String]) -> u32 {
     let pairs = parse_input(input);
     let commands = parse_pairs(pairs);
 
@@ -40,10 +40,10 @@ pub fn p1(input: &Vec<String>) -> u32 {
         SubmarineCommand::Up(x) => (pos.0, pos.1 - x),
     });
 
-    return pos.0 * pos.1;
+    pos.0 * pos.1
 }
 
-pub fn p2(input: &Vec<String>) -> u32 {
+pub fn p2(input: &[String]) -> u32 {
     let pairs = parse_input(input);
     let commands = parse_pairs(pairs);
 
@@ -55,7 +55,7 @@ pub fn p2(input: &Vec<String>) -> u32 {
             SubmarineCommand::Up(x) => (aim - x, pos),
         });
 
-    return pos.0 * pos.1;
+    pos.0 * pos.1
 }
 
 pub fn run(input: Vec<String>) {

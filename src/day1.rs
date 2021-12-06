@@ -2,18 +2,18 @@
 
 use super::common::run_and_print_time;
 
-fn p1(input: &Vec<u32>) -> usize {
+fn p1(input: &[u32]) -> usize {
     input.iter().zip(&input[1..]).filter(|(a, b)| a < b).count()
 }
 
-fn p2(input: &Vec<u32>) -> usize {
+fn p2(input: &[u32]) -> usize {
     // Calculate the 3 element sums and then re-run part1 on those values.
     let sums = input
         .iter()
         .zip(&input[1..])
         .zip(&input[2..])
         .map(|((a, b), c)| a + b + c)
-        .collect();
+        .collect::<Vec<u32>>();
 
     p1(&sums)
 }

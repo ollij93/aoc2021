@@ -8,7 +8,7 @@ impl std::fmt::Display for BingoBoard {
             for val in row {
                 write!(f, "{:3}", val).unwrap();
             }
-            writeln!(f, "").unwrap();
+            writeln!(f).unwrap();
         }
         Ok(())
     }
@@ -23,9 +23,7 @@ impl BingoBoard {
             || (0..5).any(|i| self.0.map(|row| row[i]) == [0; 5])
     }
     pub fn sum(&self) -> u32 {
-        self.0
-            .iter()
-            .fold(0, |x, row| x + row.iter().fold(0, |y, z| y + z))
+        self.0.iter().fold(0, |x, row| x + row.iter().sum::<u32>())
     }
 }
 
@@ -34,7 +32,7 @@ pub fn parse_board(input: &[String]) -> BingoBoard {
     (0..5).fold(BingoBoard([[0; 5]; 5]), |brd, rowi| {
         let line = &input[rowi + 1];
         let nums: Vec<u32> = line
-            .split(" ")
+            .split(' ')
             .filter(|s| !s.is_empty())
             .map(|s| s.parse::<u32>().unwrap())
             .collect();

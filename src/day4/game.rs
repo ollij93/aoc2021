@@ -39,11 +39,11 @@ impl BingoGame {
                 self.boards.remove(idx);
             }
         }
-        return ret;
+        ret
     }
 }
 
-fn parse_numbers(input: &String) -> Vec<u32> {
+fn parse_numbers(input: &str) -> Vec<u32> {
     input
         .split(',')
         .map(|s| s.parse::<u32>().unwrap())
@@ -57,7 +57,7 @@ fn parse_boards(input: &[String]) -> Vec<BingoBoard> {
         .collect()
 }
 
-pub fn parse_game(input: &Vec<String>) -> BingoGame {
+pub fn parse_game(input: &[String]) -> BingoGame {
     BingoGame {
         numbers: parse_numbers(&input[0]),
         boards: parse_boards(&input[1..]),

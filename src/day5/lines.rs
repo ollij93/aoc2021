@@ -1,3 +1,4 @@
+use std::cmp::Ordering;
 use std::fmt::Debug;
 use std::hash::Hash;
 use std::hash::Hasher;
@@ -55,18 +56,16 @@ impl Debug for Line {
 }
 
 fn get_step(start: u32, end: u32) -> i32 {
-    if start < end {
-        1
-    } else if start > end {
-        -1
-    } else {
-        0
+    match start.cmp(&end) {
+        Ordering::Less => 1,
+        Ordering::Greater => -1,
+        Ordering::Equal => 0,
     }
 }
 
 impl Line {
     pub fn points(&self, inc_diags: bool) -> Vec<Point> {
-        if !inc_diags && !(self.start.x == self.end.x || self.start.y == self.end.y) {
+        if !(inc_diags || self.start.x == self.end.x || self.start.y == self.end.y) {
             return vec![];
         }
         let stepx = get_step(self.start.x, self.end.x);
@@ -88,7 +87,7 @@ impl Line {
 
 fn parse_point(pointstr: &str) -> Point {
     let nums: Vec<u32> = pointstr
-        .split(",")
+        .split(',')
         .map(|s| s.parse::<u32>().unwrap())
         .collect();
     Point {
@@ -97,7 +96,7 @@ fn parse_point(pointstr: &str) -> Point {
     }
 }
 
-fn parse_line(line: &String) -> Line {
+fn parse_line(line: &str) -> Line {
     let parts: Vec<&str> = line.split("->").map(|s| s.trim()).collect();
     Line {
         start: parse_point(parts[0]),
@@ -105,6 +104,6 @@ fn parse_line(line: &String) -> Line {
     }
 }
 
-pub fn parse_lines(input: &Vec<String>) -> Vec<Line> {
-    input.iter().map(parse_line).collect()
+pub fn parse_lines(input: &[String]) -> Vec<Line> {
+    input.iter().map(|s| parse_line(s)).collect()
 }

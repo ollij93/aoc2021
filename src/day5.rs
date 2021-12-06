@@ -5,7 +5,7 @@ use std::collections::HashMap;
 
 mod lines;
 
-fn get_count(input: &Vec<lines::Line>, inc_diags: bool) -> u32 {
+fn get_count(input: &[lines::Line], inc_diags: bool) -> u32 {
     input
         .iter()
         // Get the full list of points in all lines
@@ -21,16 +21,17 @@ fn get_count(input: &Vec<lines::Line>, inc_diags: bool) -> u32 {
         .count() as u32
 }
 
-fn p1(lns: &Vec<lines::Line>) -> u32 {
+fn p1(lns: &[lines::Line]) -> u32 {
     get_count(lns, false)
 }
 
-fn p2(lns: &Vec<lines::Line>) -> u32 {
+fn p2(lns: &[lines::Line]) -> u32 {
     get_count(lns, true)
 }
 
 pub fn run(input: Vec<String>) {
     let lines = lines::parse_lines(&input);
+
     let a = run_and_print_time(p1, &lines);
     println!("Part1: {}", a);
 
