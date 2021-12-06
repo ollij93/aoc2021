@@ -5,38 +5,35 @@ use std::collections::HashMap;
 
 mod lines;
 
-fn get_count(input: &Vec<String>, inc_diags: bool) -> u32 {
-    //game::parse_game(input).run()[0]
-    let lines = lines::parse_lines(input);
-    let mut hashmap = HashMap::new();
-    for line in lines {
-        let points = line.points(inc_diags);
-        for point in points {
-            let value = 1 + hashmap.get(&point).unwrap_or(&0);
-            hashmap.insert(point, value);
-        }
-    }
-    let mut count = 0;
-    for (_, val) in hashmap.iter() {
-        if *val > 1 {
-            count += 1;
-        }
-    }
-    count
+fn get_count(input: &Vec<lines::Line>, inc_diags: bool) -> u32 {
+    input
+        .iter()
+        // Get the full list of points in all lines
+        .flat_map(|line| line.points(inc_diags))
+        // Fold those into a hashmap of point -> count
+        .fold(HashMap::new(), |mut hm, point| {
+            *hm.entry(point).or_insert(0) += 1;
+            hm
+        })
+        // Count the number of points with multiple entries
+        .values()
+        .filter(|n| **n > 1)
+        .count() as u32
 }
 
-fn p1(input: &Vec<String>) -> u32 {
-    get_count(input, false)
+fn p1(lns: &Vec<lines::Line>) -> u32 {
+    get_count(lns, false)
 }
 
-fn p2(input: &Vec<String>) -> u32 {
-    get_count(input, true)
+fn p2(lns: &Vec<lines::Line>) -> u32 {
+    get_count(lns, true)
 }
 
 pub fn run(input: Vec<String>) {
-    let a = run_and_print_time(p1, &input);
+    let lines = lines::parse_lines(&input);
+    let a = run_and_print_time(p1, &lines);
     println!("Part1: {}", a);
 
-    let b = run_and_print_time(p2, &input);
+    let b = run_and_print_time(p2, &lines);
     println!("Part2: {}", b);
 }
