@@ -1,4 +1,4 @@
-// Solutions for day5 of Advent of Code
+// Solutions for day6 of Advent of Code
 
 use super::common::run_and_print_time;
 

@@ -7,10 +7,12 @@ mod day3;
 mod day4;
 mod day5;
 mod day6;
+mod day7;
 
 use argparse::{ArgumentParser, Store};
 use std::io;
 use std::io::BufRead;
+use std::str::FromStr;
 
 fn input_as_string() -> Vec<String> {
     io::stdin()
@@ -20,18 +22,26 @@ fn input_as_string() -> Vec<String> {
         .collect()
 }
 
-// Get input lines from stdin as a u32 vector
-fn input_as_u32() -> Vec<u32> {
+// Get input lines from stdin as a request type vector
+fn input_as<I>() -> Vec<I>
+where
+    I: FromStr,
+    <I as std::str::FromStr>::Err: std::fmt::Debug,
+{
     input_as_string()
         .iter()
-        .map(|line| line.parse::<u32>().unwrap())
+        .map(|line| line.parse::<I>().unwrap())
         .collect()
 }
 
-fn input_as_u64_from_list() -> Vec<u64> {
+fn input_from_list_as<I>() -> Vec<I>
+where
+    I: FromStr,
+    <I as std::str::FromStr>::Err: std::fmt::Debug,
+{
     input_as_string()[0]
         .split(',')
-        .map(|s| s.parse::<u64>().unwrap())
+        .map(|s| s.parse::<I>().unwrap())
         .collect()
 }
 
@@ -50,12 +60,13 @@ fn main() {
     }
 
     match day {
-        1 => day1::run(input_as_u32()),
+        1 => day1::run(input_as::<u32>()),
         2 => day2::run(input_as_string()),
         3 => day3::run(input_as_string()),
         4 => day4::run(input_as_string()),
         5 => day5::run(input_as_string()),
-        6 => day6::run(input_as_u64_from_list()),
+        6 => day6::run(input_from_list_as::<u64>()),
+        7 => day7::run(input_from_list_as::<u32>()),
         _ => {
             println!("Day not yet implemented.");
         }
