@@ -1,59 +1,18 @@
 // Solutions for day7 of Advent of Code
 
-use super::common::run_and_print_time;
-use std::collections::HashMap;
+use super::common::{mean, median, run_and_print_time};
 
-fn calculate_cost<F>(map: &HashMap<u32, u32>, pos: u32, cost_to_move: &F) -> u32
+fn calculate_cost<F>(input: &[u32], tgt: u32, cost_to_move: &F) -> u32
 where
     F: Fn(u32) -> u32,
 {
-    map.keys().fold(0, |cost, key| {
-        if *key < pos {
-            cost + map[key] * cost_to_move(pos - key)
-        } else {
-            cost + map[key] * cost_to_move(key - pos)
-        }
+    input.iter().fold(0, |cost, pos| {
+        cost + cost_to_move(if *pos < tgt { tgt - pos } else { pos - tgt })
     })
-}
-
-fn calculate_costs<F>(map: HashMap<u32, u32>, cost_to_move: &F) -> Vec<(u32, u32)>
-where
-    F: Fn(u32) -> u32,
-{
-    let max = map
-        .keys()
-        .fold(0, |mx, key| if *key > mx { *key } else { mx });
-    (0..=max).fold(vec![], |mut ret, pos| {
-        ret.push((pos, calculate_cost(&map, pos, &cost_to_move)));
-        ret
-    })
-}
-
-fn calculate_min_cost<F>(input: Vec<u32>, cost_to_move: &F) -> u32
-where
-    F: Fn(u32) -> u32,
-{
-    let costs = calculate_costs(
-        input.iter().fold(HashMap::new(), |mut hashmap, pos| {
-            *hashmap.entry(*pos).or_insert(0) += 1;
-            hashmap
-        }),
-        cost_to_move,
-    );
-    costs.iter().fold(
-        costs[0],
-        |min, cost| {
-            if cost.1 < min.1 {
-                *cost
-            } else {
-                min
-            }
-        },
-    ).1
 }
 
 fn p1(input: Vec<u32>) -> u32 {
-    calculate_min_cost(input, &|x| x)
+    calculate_cost(&input, median(&input), &|x| x)
 }
 
 fn p2_cost_to_move(units: u32) -> u32 {
@@ -65,7 +24,7 @@ fn p2_cost_to_move(units: u32) -> u32 {
 }
 
 fn p2(input: Vec<u32>) -> u32 {
-    calculate_min_cost(input, &p2_cost_to_move)
+    calculate_cost(&input, mean(&input), &p2_cost_to_move)
 }
 
 pub fn run(input: Vec<u32>) {
