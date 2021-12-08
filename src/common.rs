@@ -1,14 +1,15 @@
 use std::time::Instant;
 
 /// Run the given function and print how long it took to run in milliseconds
-pub fn run_and_print_time<T, F, I>(f: F, i: I) -> T
+pub fn run_and_print_time<T, F, I>(f: F, i: I) -> (T, u128)
 where
     F: Fn(I) -> T,
 {
     let now = Instant::now();
     let ret = f(i);
-    println!("Ran in {}µs.", now.elapsed().as_micros());
-    ret
+    let time = now.elapsed().as_micros();
+    println!("Ran in {}µs.", time);
+    (ret, time)
 }
 
 /// Calculate the median of a set of values

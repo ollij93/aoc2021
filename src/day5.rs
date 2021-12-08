@@ -29,12 +29,16 @@ fn p2(lns: &[lines::Line]) -> u32 {
     get_count(lns, true)
 }
 
-pub fn run(input: Vec<String>) {
+pub fn run(input: Vec<String>) -> u128 {
+    println!("=== DAY 5 ===");
+
     let lines = lines::parse_lines(&input);
 
-    let a = run_and_print_time(p1, &lines);
+    let (a, timea) = run_and_print_time(p1, &lines);
     println!("Part1: {}", a);
 
-    let b = run_and_print_time(p2, &lines);
+    let (b, timeb) = run_and_print_time(p2, &lines);
     println!("Part2: {}", b);
+
+    timea + timeb
 }

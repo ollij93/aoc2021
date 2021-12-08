@@ -58,10 +58,14 @@ pub fn p2(input: &[String]) -> u32 {
     pos.0 * pos.1
 }
 
-pub fn run(input: Vec<String>) {
-    let a = run_and_print_time(p1, &input);
+pub fn run(input: Vec<String>) -> u128 {
+    println!("=== DAY 2 ===");
+
+    let (a, timea) = run_and_print_time(p1, &input);
     println!("Part1: {}", a);
 
-    let b = run_and_print_time(p2, &input);
+    let (b, timeb) = run_and_print_time(p2, &input);
     println!("Part2: {}", b);
+
+    timea + timeb
 }

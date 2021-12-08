@@ -35,10 +35,14 @@ fn p2(input: Vec<u64>) -> u64 {
     final_school.0.iter().sum()
 }
 
-pub fn run(input: Vec<u64>) {
-    let a = run_and_print_time(p1, input.clone());
+pub fn run(input: Vec<u64>) -> u128 {
+    println!("=== DAY 6 ===");
+
+    let (a, timea) = run_and_print_time(p1, input.clone());
     println!("Part1: {}", a);
 
-    let b = run_and_print_time(p2, input);
+    let (b, timeb) = run_and_print_time(p2, input);
     println!("Part2: {}", b);
+
+    timea + timeb
 }

@@ -11,8 +11,8 @@ where
     })
 }
 
-fn p1(input: Vec<u32>) -> u32 {
-    calculate_cost(&input, median(&input), &|x| x)
+fn p1(input: &[u32]) -> u32 {
+    calculate_cost(input, median(input), &|x| x)
 }
 
 fn p2_cost_to_move(units: u32) -> u32 {
@@ -23,14 +23,18 @@ fn p2_cost_to_move(units: u32) -> u32 {
     }
 }
 
-fn p2(input: Vec<u32>) -> u32 {
-    calculate_cost(&input, mean(&input), &p2_cost_to_move)
+fn p2(input: &[u32]) -> u32 {
+    calculate_cost(input, mean(input), &p2_cost_to_move)
 }
 
-pub fn run(input: Vec<u32>) {
-    let a = run_and_print_time(p1, input.clone());
+pub fn run(input: Vec<u32>) -> u128 {
+    println!("=== DAY 7 ===");
+
+    let (a, timea) = run_and_print_time(p1, &input);
     println!("Part1: {}", a);
 
-    let b = run_and_print_time(p2, input);
+    let (b, timeb) = run_and_print_time(p2, &input);
     println!("Part2: {}", b);
+
+    timea + timeb
 }
