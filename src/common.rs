@@ -13,8 +13,11 @@ where
 }
 
 /// Calculate the median of a set of values
-pub fn median(values: &[u32]) -> u32 {
-    let mut copy: Vec<u32> = values.to_owned();
+pub fn median<I>(values: &[I]) -> I
+where
+    I: std::cmp::Ord + std::clone::Clone + Copy,
+{
+    let mut copy: Vec<I> = values.to_owned();
     copy.sort_unstable();
     copy[copy.len() / 2]
 }

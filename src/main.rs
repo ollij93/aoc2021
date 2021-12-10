@@ -10,6 +10,7 @@ mod day6;
 mod day7;
 mod day8;
 mod day9;
+mod day10;
 
 use argparse::{ArgumentParser, Store};
 use std::fs::File;
@@ -89,6 +90,9 @@ fn main() {
                 day9::run(input_as_string(&mut BufReader::new(
                     File::open("inputs/day9.txt").unwrap(),
                 ))),
+                day10::run(input_as_string(&mut BufReader::new(
+                    File::open("inputs/day10.txt").unwrap(),
+                ))),
             ]
             .iter()
             .sum::<u128>();
@@ -120,6 +124,9 @@ fn main() {
         }
         9 => {
             day9::run(input_as_string(&mut BufReader::new(io::stdin())));
+        }
+        10 => {
+            day10::run(input_as_string(&mut BufReader::new(io::stdin())));
         }
         _ => {
             println!("Day not yet implemented.");
