@@ -32,6 +32,24 @@ impl FromStr for Cave {
     type Err = String;
 }
 
+#[derive(Clone)]
+enum Route<'a> {
+    Start,
+    Path {
+        curr: &'a Cave,
+        previous: Box<Route<'a>>,
+    },
+}
+
+impl<'a> Route<'a> {
+    fn contains(&self, cave: &'a Cave) -> bool {
+        match self {
+            Route::Start => false,
+            Route::Path { curr, previous } => **curr == *cave || previous.contains(cave),
+        }
+    }
+}
+
 fn parse_connection(line: &str) -> (Cave, Cave) {
     let (name_a, name_b) = line.split_once("-").unwrap();
     (
@@ -51,65 +69,65 @@ fn parse_cave_system(input: &[String]) -> HashMap<Cave, HashSet<Cave>> {
     })
 }
 
-fn get_routes(
-    cave_system: &HashMap<Cave, HashSet<Cave>>,
-    route: Vec<Cave>,
+fn get_routes<'a>(
+    cave_system: &'a HashMap<Cave, HashSet<Cave>>,
+    route: Route<'a>,
     allowed_small_revisits: u32,
-) -> Vec<Vec<Cave>> {
+) -> Vec<Route<'a>> {
     // Can't figure out how to make these constants due to the use of string
+    let start_cave = Cave {
+        name: "start".to_string(),
+        size: CaveSize::Small,
+    };
     let end_cave = Cave {
         name: "end".to_string(),
         size: CaveSize::Small,
     };
 
-    let current = route.last().unwrap();
+    let current = match route {
+        Route::Path { curr, previous: _ } => curr,
+        Route::Start => &start_cave,
+    };
     // If this is the end cave, return the route here as a successful route
     if *current == end_cave {
         return vec![route];
     }
 
     // Visit all the next caves except those that aren't permitted
-    let nexts = cave_system[current].iter().filter(|cave| {
-        !((cave.name == "start")
-            || cave.size == CaveSize::Small && route.contains(cave) && allowed_small_revisits == 0)
-    });
+    cave_system[current]
+        .iter()
+        .flat_map(|cave| {
+            let is_small_revisit = cave.size == CaveSize::Small && route.contains(cave);
+            if cave.name == "start" || (allowed_small_revisits == 0 && is_small_revisit) {
+                vec![]
+            } else {
+                let sub_allowed_small_revisits = if is_small_revisit {
+                    allowed_small_revisits - 1
+                } else {
+                    allowed_small_revisits
+                };
 
-    let mut ret = vec![];
-    for next in nexts {
-        let sub_allowed_small_revisits = if route.contains(next) && next.size == CaveSize::Small {
-            allowed_small_revisits - 1
-        } else {
-            allowed_small_revisits
-        };
-        let mut next_route: Vec<Cave> = route.clone();
-        next_route.push(next.to_owned());
-        ret.extend(get_routes(
-            cave_system,
-            next_route,
-            sub_allowed_small_revisits,
-        ));
-    }
-    ret
+                let new_path = Route::Path {
+                    curr: cave,
+                    previous: Box::new(route.clone()), // AHHHH! HOW TO AVOID THIS CLONE?
+                };
+
+                get_routes(cave_system, new_path, sub_allowed_small_revisits)
+            }
+        })
+        .collect::<Vec<Route<'a>>>()
 }
 
 fn p1(input: &[String]) -> u32 {
     let cave_system = parse_cave_system(input);
-    let start_cave = Cave {
-        name: "start".to_string(),
-        size: CaveSize::Small,
-    };
 
-    get_routes(&cave_system, vec![start_cave], 0).len() as u32
+    get_routes(&cave_system, Route::Start, 0).len() as u32
 }
 
 fn p2(input: &[String]) -> u32 {
     let cave_system = parse_cave_system(input);
-    let start_cave = Cave {
-        name: "start".to_string(),
-        size: CaveSize::Small,
-    };
 
-    get_routes(&cave_system, vec![start_cave], 1).len() as u32
+    get_routes(&cave_system, Route::Start, 1).len() as u32
 }
 
 pub fn run(input: Vec<String>) -> u128 {
