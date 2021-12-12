@@ -16,7 +16,7 @@ impl Cave {
             .enumerate()
             .flat_map(|(ri, row)| row.iter().enumerate().map(move |(ci, x)| (ri, ci, x)))
             .filter(|(_, _, x)| **x > 9);
-        let ret = Cave {
+        Cave {
             energies: flashers.fold(self.energies, |mut energies, (ri, ci, _)| {
                 // Increase the energy of all neighbours that haven't been reset
                 for subrow in energies
@@ -38,8 +38,7 @@ impl Cave {
                 energies[ri][ci] = 0;
                 energies
             }),
-        };
-        ret
+        }
     }
     fn step(&self) -> (u32, Cave) {
         let increased_energies = self.energies.map(|row| row.map(|x| x + 1));
