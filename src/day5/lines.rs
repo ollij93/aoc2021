@@ -1,53 +1,13 @@
 use std::cmp::Ordering;
 use std::fmt::Debug;
 use std::hash::Hash;
-use std::hash::Hasher;
 
-pub struct Point {
-    pub x: u32,
-    pub y: u32,
-}
-impl Hash for Point {
-    fn hash<H>(&self, h: &mut H)
-    where
-        H: Hasher,
-    {
-        h.write_u32(self.x);
-        h.write_u32(self.y);
-    }
-}
-impl Debug for Point {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
-        write!(f, "{},{}", self.x, self.y)
-    }
-}
+use crate::point::Point;
 
-impl PartialEq for Point {
-    fn eq(&self, rhs: &Point) -> bool {
-        self.x == rhs.x && self.y == rhs.y
-    }
-}
-impl Eq for Point {}
-
+#[derive(PartialEq, Eq, Hash)]
 pub struct Line {
     pub start: Point,
     pub end: Point,
-}
-
-impl PartialEq for Line {
-    fn eq(&self, rhs: &Line) -> bool {
-        self.start == rhs.start && self.end == rhs.end
-    }
-}
-impl Eq for Line {}
-impl Hash for Line {
-    fn hash<H>(&self, h: &mut H)
-    where
-        H: Hasher,
-    {
-        self.start.hash(h);
-        self.end.hash(h);
-    }
 }
 impl Debug for Line {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::result::Result<(), std::fmt::Error> {
