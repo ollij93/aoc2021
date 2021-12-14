@@ -23,14 +23,14 @@ fn simulate_day(school: &FishSchool) -> FishSchool {
     }))
 }
 
-fn p1(input: Vec<u64>) -> u64 {
-    let init_school = create_school(&input);
+fn p1(input: &[u64]) -> u64 {
+    let init_school = create_school(input);
     let final_school = (0..80).fold(init_school, |fish, _| simulate_day(&fish));
     final_school.0.iter().sum()
 }
 
-fn p2(input: Vec<u64>) -> u64 {
-    let init_school = create_school(&input);
+fn p2(input: &[u64]) -> u64 {
+    let init_school = create_school(input);
     let final_school = (0..256).fold(init_school, |fish, _| simulate_day(&fish));
     final_school.0.iter().sum()
 }
@@ -38,10 +38,10 @@ fn p2(input: Vec<u64>) -> u64 {
 pub fn run(input: Vec<u64>) -> u128 {
     println!("=== DAY 6 ===");
 
-    let (a, timea) = run_and_print_time(p1, input.clone());
+    let (a, timea) = run_and_print_time(p1, &input);
     println!("Part1: {}", a);
 
-    let (b, timeb) = run_and_print_time(p2, input);
+    let (b, timeb) = run_and_print_time(p2, &input);
     println!("Part2: {}", b);
 
     timea + timeb
