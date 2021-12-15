@@ -52,7 +52,7 @@ fn get_neighbors(point: &Point, size: (u32, u32)) -> Vec<Point> {
     ret
 }
 
-fn dijkstra(nodecosts: Vec<Vec<u8>>, start: Point) -> HashMap<Point, u32> {
+fn dijkstra(nodecosts: &[Vec<u8>], start: Point) -> HashMap<Point, u32> {
     let mut costs: HashMap<Point, u32> = HashMap::new();
     let mut visited: HashSet<Point> = HashSet::new();
     let mut to_visit: BinaryHeap<Reverse<Vertex>> = BinaryHeap::new();
@@ -83,23 +83,15 @@ fn dijkstra(nodecosts: Vec<Vec<u8>>, start: Point) -> HashMap<Point, u32> {
     costs
 }
 
-fn parse_input(input: &[String]) -> Vec<Vec<u8>> {
-    input
-        .iter()
-        .map(|line| line.chars().map(|c| c as u8 - b'0').collect::<Vec<u8>>())
-        .collect()
-}
-
-fn p1(input: &[String]) -> u32 {
-    let paths = dijkstra(parse_input(input), Point { x: 0, y: 0 });
+fn p1(input: &[Vec<u8>]) -> u32 {
+    let paths = dijkstra(input, Point { x: 0, y: 0 });
     paths[&Point {
         x: input[0].len() as u32 - 1,
         y: input.len() as u32 - 1,
     }]
 }
 
-fn p2(input: &[String]) -> u32 {
-    let single_cave: Vec<Vec<u8>> = parse_input(input);
+fn p2(single_cave: &[Vec<u8>]) -> u32 {
     let stretched_x: Vec<Vec<u8>> = single_cave
         .iter()
         .map(|row| {
@@ -124,14 +116,14 @@ fn p2(input: &[String]) -> u32 {
             .map(|x| x.to_owned())
             .collect::<Vec<Vec<u8>>>()
     });
-    let paths = dijkstra(full_cave, Point { x: 0, y: 0 });
+    let paths = dijkstra(&full_cave, Point { x: 0, y: 0 });
     paths[&Point {
-        x: input[0].len() as u32 * 5 - 1,
-        y: input.len() as u32 * 5 - 1,
+        x: full_cave[0].len() as u32 - 1,
+        y: full_cave.len() as u32 - 1,
     }]
 }
 
-pub fn run(input: Vec<String>) -> u128 {
+pub fn run(input: Vec<Vec<u8>>) -> u128 {
     println!("=== DAY 15 ===");
 
     let (a, timea) = run_and_print_time(p1, &input);

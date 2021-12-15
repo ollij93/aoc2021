@@ -95,34 +95,18 @@ impl HeightMap {
     }
 }
 
-fn parse_heightmap(lines: &[String]) -> HeightMap {
-    HeightMap {
-        heights: lines
-            .iter()
-            .map(|line| {
-                line.as_bytes()
-                    .iter()
-                    .map(|c| c - b'0')
-                    .collect::<Vec<u8>>()
-            })
-            .collect::<Vec<Vec<u8>>>(),
-    }
-}
-
-fn p1(input: &[String]) -> u32 {
-    parse_heightmap(input)
-        .lowpoints()
+fn p1(map: &HeightMap) -> u32 {
+    map.lowpoints()
         .iter()
         .map(|(_, _, n)| 1 + *n as u32)
         .sum::<u32>()
 }
 
-fn p2(input: &[String]) -> u32 {
-    let heightmap = parse_heightmap(input);
-    let mut sizes = heightmap
+fn p2(map: &HeightMap) -> u32 {
+    let mut sizes = map
         .lowpoints()
         .iter()
-        .map(|(row, col, _)| heightmap.basin(*row, *col).len())
+        .map(|(row, col, _)| map.basin(*row, *col).len())
         .collect::<Vec<usize>>();
     sizes.sort_unstable();
     sizes.iter().rev().collect::<Vec<&usize>>()[0..3]
@@ -130,13 +114,15 @@ fn p2(input: &[String]) -> u32 {
         .fold(1, |prod, size| prod * (**size as u32))
 }
 
-pub fn run(input: Vec<String>) -> u128 {
+pub fn run(input: Vec<Vec<u8>>) -> u128 {
     println!("=== DAY 9 ===");
 
-    let (a, timea) = run_and_print_time(p1, &input);
+    let map = HeightMap { heights: input };
+
+    let (a, timea) = run_and_print_time(p1, &map);
     println!("Part1: {}", a);
 
-    let (b, timeb) = run_and_print_time(p2, &input);
+    let (b, timeb) = run_and_print_time(p2, &map);
     println!("Part2: {}", b);
 
     timea + timeb

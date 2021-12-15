@@ -1,8 +1,13 @@
 extern crate argparse;
 
 mod common;
-mod point;
 mod day1;
+mod day10;
+mod day11;
+mod day12;
+mod day13;
+mod day14;
+mod day15;
 mod day2;
 mod day3;
 mod day4;
@@ -11,12 +16,7 @@ mod day6;
 mod day7;
 mod day8;
 mod day9;
-mod day10;
-mod day11;
-mod day12;
-mod day13;
-mod day14;
-mod day15;
+mod point;
 
 use argparse::{ArgumentParser, Store};
 use std::fs::File;
@@ -49,6 +49,13 @@ where
     input_as_string(reader)[0]
         .split(',')
         .map(|s| s.parse::<I>().unwrap())
+        .collect()
+}
+
+fn input_from_grid(reader: &mut dyn BufRead) -> Vec<Vec<u8>> {
+    input_as_string(reader)
+        .iter()
+        .map(|line| line.chars().map(|c| (c as u8 - b'0')).collect::<Vec<u8>>())
         .collect()
 }
 
@@ -93,13 +100,13 @@ fn main() {
                 day8::run(input_as_string(&mut BufReader::new(
                     File::open("inputs/day8.txt").unwrap(),
                 ))),
-                day9::run(input_as_string(&mut BufReader::new(
+                day9::run(input_from_grid(&mut BufReader::new(
                     File::open("inputs/day9.txt").unwrap(),
                 ))),
                 day10::run(input_as_string(&mut BufReader::new(
                     File::open("inputs/day10.txt").unwrap(),
                 ))),
-                day11::run(input_as_string(&mut BufReader::new(
+                day11::run(input_from_grid(&mut BufReader::new(
                     File::open("inputs/day11.txt").unwrap(),
                 ))),
                 day12::run(input_as_string(&mut BufReader::new(
@@ -111,7 +118,7 @@ fn main() {
                 day14::run(input_as_string(&mut BufReader::new(
                     File::open("inputs/day14.txt").unwrap(),
                 ))),
-                day15::run(input_as_string(&mut BufReader::new(
+                day15::run(input_from_grid(&mut BufReader::new(
                     File::open("inputs/day15.txt").unwrap(),
                 ))),
             ]
@@ -144,13 +151,13 @@ fn main() {
             day8::run(input_as_string(&mut BufReader::new(io::stdin())));
         }
         9 => {
-            day9::run(input_as_string(&mut BufReader::new(io::stdin())));
+            day9::run(input_from_grid(&mut BufReader::new(io::stdin())));
         }
         10 => {
             day10::run(input_as_string(&mut BufReader::new(io::stdin())));
         }
         11 => {
-            day11::run(input_as_string(&mut BufReader::new(io::stdin())));
+            day11::run(input_from_grid(&mut BufReader::new(io::stdin())));
         }
         12 => {
             day12::run(input_as_string(&mut BufReader::new(io::stdin())));
@@ -162,7 +169,7 @@ fn main() {
             day14::run(input_as_string(&mut BufReader::new(io::stdin())));
         }
         15 => {
-            day15::run(input_as_string(&mut BufReader::new(io::stdin())));
+            day15::run(input_from_grid(&mut BufReader::new(io::stdin())));
         }
         _ => {
             println!("Day not yet implemented.");

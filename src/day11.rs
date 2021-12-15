@@ -4,8 +4,9 @@ use super::common::run_and_print_time;
 use std::cmp::max;
 use std::cmp::min;
 
+#[derive(Clone)]
 struct Cave {
-    energies: [[u32; 10]; 10],
+    energies: Vec<Vec<u8>>,
 }
 
 impl Cave {
@@ -17,18 +18,14 @@ impl Cave {
             .flat_map(|(ri, row)| row.iter().enumerate().map(move |(ci, x)| (ri, ci, x)))
             .filter(|(_, _, x)| **x > 9);
         Cave {
-            energies: flashers.fold(self.energies, |mut energies, (ri, ci, _)| {
+            energies: flashers.fold(self.energies.clone(), |mut energies, (ri, ci, _)| {
                 // Increase the energy of all neighbours that haven't been reset
                 for subrow in energies
                     .iter_mut()
                     .take(min(ri, 8) + 2)
                     .skip(max(ri, 1) - 1)
                 {
-                    for item in subrow
-                        .iter_mut()
-                        .take(min(ci, 8) + 2)
-                        .skip(max(ci, 1) - 1)
-                    {
+                    for item in subrow.iter_mut().take(min(ci, 8) + 2).skip(max(ci, 1) - 1) {
                         if *item > 0 {
                             *item += 1;
                         }
@@ -41,7 +38,11 @@ impl Cave {
         }
     }
     fn step(&self) -> (u32, Cave) {
-        let increased_energies = self.energies.map(|row| row.map(|x| x + 1));
+        let increased_energies = self
+            .energies
+            .iter()
+            .map(|row| row.iter().map(|x| x + 1).collect())
+            .collect();
         let mut newcave = Cave {
             energies: increased_energies,
         };
@@ -63,20 +64,7 @@ impl Cave {
     }
 }
 
-fn parse_cave(input: &[String]) -> Cave {
-    let mut cave: Cave = Cave {
-        energies: [[0; 10]; 10],
-    };
-    for (row, value) in input.iter().enumerate() {
-        for (col, c) in value.chars().enumerate() {
-            cave.energies[row][col] = (c as u8 - b'0') as u32;
-        }
-    }
-    cave
-}
-
-fn p1(input: &[String]) -> u32 {
-    let cave = parse_cave(input);
+fn p1(cave: Cave) -> u32 {
     let (ret, _) = (0..100).fold((0, cave), |(count, cave), _| {
         let (stepcount, newcave) = cave.step();
         (stepcount + count, newcave)
@@ -84,8 +72,7 @@ fn p1(input: &[String]) -> u32 {
     ret
 }
 
-fn p2(input: &[String]) -> u32 {
-    let mut cave = parse_cave(input);
+fn p2(mut cave: Cave) -> u32 {
     let mut step = 0;
     loop {
         if cave.energies == [[0; 10]; 10] {
@@ -97,13 +84,15 @@ fn p2(input: &[String]) -> u32 {
     step
 }
 
-pub fn run(input: Vec<String>) -> u128 {
+pub fn run(input: Vec<Vec<u8>>) -> u128 {
     println!("=== DAY 11 ===");
 
-    let (a, timea) = run_and_print_time(p1, &input);
+    let cave = Cave { energies: input };
+
+    let (a, timea) = run_and_print_time(p1, cave.clone());
     println!("Part1: {}", a);
 
-    let (b, timeb) = run_and_print_time(p2, &input);
+    let (b, timeb) = run_and_print_time(p2, cave);
     println!("Part2: {}", b);
 
     timea + timeb
