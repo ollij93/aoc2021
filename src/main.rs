@@ -10,6 +10,7 @@ mod day14;
 mod day15;
 mod day16;
 mod day17;
+mod day18;
 mod day2;
 mod day3;
 mod day4;
@@ -129,6 +130,9 @@ fn main() {
                 day17::run(input_as_string(&mut BufReader::new(
                     File::open("inputs/day17.txt").unwrap(),
                 ))),
+                day18::run(input_as_string(&mut BufReader::new(
+                    File::open("inputs/day18.txt").unwrap(),
+                ))),
             ]
             .iter()
             .sum::<u128>();
@@ -184,6 +188,9 @@ fn main() {
         }
         17 => {
             day17::run(input_as_string(&mut BufReader::new(io::stdin())));
+        }
+        18 => {
+            day18::run(input_as_string(&mut BufReader::new(io::stdin())));
         }
         _ => {
             println!("Day not yet implemented.");
