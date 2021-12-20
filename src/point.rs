@@ -123,22 +123,3 @@ impl<'a, 'b> Sub<&'a Point3> for &'b Point3 {
         }
     }
 }
-
-pub struct Volume {
-    pub minx: i32,
-    pub miny: i32,
-    pub minz: i32,
-    pub maxx: i32,
-    pub maxy: i32,
-    pub maxz: i32,
-}
-impl Volume {
-    pub fn contains(&self, point: &Point3) -> bool {
-        self.minx <= point.x
-            && point.x <= self.maxx
-            && self.miny <= point.y
-            && point.y <= self.maxy
-            && self.minz <= point.z
-            && point.z <= self.maxz
-    }
-}

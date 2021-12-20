@@ -1,6 +1,5 @@
 // Solutions for day19 of Advent of Code
 
-use crate::point::Volume;
 use std::cmp::max;
 use std::collections::HashMap;
 use std::collections::HashSet;
@@ -143,48 +142,20 @@ impl Scanner {
         }
     }
 
-    fn is_valid_pos(
-        &self,
-        pos_ori: &PosOri,
-        known_beacons: &HashSet<Point3>,
-        known_volume: &Volume,
-        debug: bool,
-    ) -> bool {
-        if debug {
-            println!("  Checking {:?}", pos_ori);
-        }
+    fn is_valid_pos(&self, pos_ori: &PosOri, known_beacons: &HashSet<Point3>) -> bool {
         let beacons: HashSet<Point3> = self
             .beacons
             .iter()
             .map(|p| pos_ori.ori.rel_to_world(p) + &pos_ori.pos)
             .collect();
         let agreed_beacons: HashSet<&Point3> = beacons.intersection(known_beacons).collect();
-        let unknown_beacons = beacons.difference(known_beacons);
-        let invalid_beacons: HashSet<&Point3> = unknown_beacons
-            .filter(|p| known_volume.contains(p))
-            .collect();
-        if debug {
-            println!("    {} invalid", invalid_beacons.len());
-            for invalid in &invalid_beacons {
-                println!("    Invalid {:?}", invalid);
-            }
-            println!("    {} agreed", agreed_beacons.len());
-            for agreed in &agreed_beacons {
-                println!("    Agreed {:?}", agreed);
-            }
-        }
         // Need at least 12 beacons to overlap for this to be a confirmed position
-        invalid_beacons.is_empty() && agreed_beacons.len() >= 12
+        agreed_beacons.len() >= 12
     }
 
     /// Find all the possible positions of this scanner given the well known
     /// positions of beacons that exist
-    fn find_valid_positions(
-        &self,
-        known_beacons: &HashSet<Point3>,
-        known_volume: &Volume,
-        debug: bool,
-    ) -> HashSet<PosOri> {
+    fn find_valid_positions(&self, known_beacons: &HashSet<Point3>) -> HashSet<PosOri> {
         // Possible positions to try are those where the first point aligns
         // with the first in the other, the second in the other, the third in
         // the other, etc and where the second aligns with the same, and so on.
@@ -211,7 +182,7 @@ impl Scanner {
             .collect::<HashSet<PosOri>>();
         all_positions
             .iter()
-            .filter(|pos| self.is_valid_pos(pos, known_beacons, known_volume, debug))
+            .filter(|pos| self.is_valid_pos(pos, known_beacons))
             .cloned()
             .collect::<HashSet<PosOri>>()
     }
@@ -249,9 +220,32 @@ fn parse_input(input: &[String]) -> HashMap<u32, Scanner> {
     scanners.insert(scanner.idx, scanner);
     scanners
 }
+fn manhattan_distance(a: &Point3, b: &Point3) -> i32 {
+    (b.x - a.x).abs() + (b.y - a.y).abs() + (b.z - a.z).abs()
+}
+
+fn calculate_manhattans(points: &HashSet<Point3>) -> HashSet<i32> {
+    let pointsvec = points.iter().collect::<Vec<&Point3>>();
+    (0..points.len())
+        .map(|idx1| {
+            (idx1 + 1..points.len())
+                .map(|idx2| manhattan_distance(&pointsvec[idx1], &pointsvec[idx2]))
+                .collect::<Vec<i32>>()
+        })
+        .flatten()
+        .collect::<HashSet<i32>>()
+}
+
+fn calculate_beacon_manhattans(scanners: &HashMap<u32, Scanner>) -> HashMap<u32, HashSet<i32>> {
+    scanners
+        .iter()
+        .map(|(k, v)| (*k, calculate_manhattans(&v.beacons)))
+        .collect::<HashMap<u32, HashSet<i32>>>()
+}
 
 fn get_all_scanners(input: &[String]) -> HashMap<u32, Scanner> {
     let mut scanners = parse_input(input);
+    let manhattans = calculate_beacon_manhattans(&scanners);
     let mut unknown_idxs: Vec<u32> = scanners.keys().filter(|k| **k > 0).copied().collect();
     let mut known_unchecked: Vec<u32> = vec![0];
     let mut known_checked = vec![];
@@ -264,22 +258,26 @@ fn get_all_scanners(input: &[String]) -> HashMap<u32, Scanner> {
                 let unknown_scanner = &scanners[unknown_idx];
                 let positions = match known_scanner.known_position {
                     None => panic!("Don't know the position of a known scanner!"),
-                    Some(pos_ori) => unknown_scanner.find_valid_positions(
-                        &known_scanner
-                            .beacons
-                            .iter()
-                            .map(|p| pos_ori.ori.rel_to_world(p) + &pos_ori.pos)
-                            .collect::<HashSet<Point3>>(),
-                        &Volume {
-                            minx: pos_ori.pos.x - 1000,
-                            miny: pos_ori.pos.y - 1000,
-                            minz: pos_ori.pos.z - 1000,
-                            maxx: pos_ori.pos.x + 1000,
-                            maxy: pos_ori.pos.y + 1000,
-                            maxz: pos_ori.pos.z + 1000,
-                        },
-                        false, //*unknown_idx == 1,
-                    ),
+                    Some(pos_ori) => {
+                        let known_manhattan = &manhattans[&known_idx];
+                        let unknown_manhattan = &manhattans[unknown_idx];
+                        if known_manhattan
+                            .intersection(unknown_manhattan)
+                            .collect::<HashSet<&i32>>()
+                            .len()
+                            < 12
+                        {
+                            HashSet::new()
+                        } else {
+                            unknown_scanner.find_valid_positions(
+                                &known_scanner
+                                    .beacons
+                                    .iter()
+                                    .map(|p| pos_ori.ori.rel_to_world(p) + &pos_ori.pos)
+                                    .collect::<HashSet<Point3>>(),
+                            )
+                        }
+                    }
                 };
                 if positions.len() == 1 {
                     let pos_ori = positions.iter().cloned().collect::<Vec<PosOri>>()[0];
@@ -325,10 +323,6 @@ fn p1(scanners: &HashMap<u32, Scanner>) -> u32 {
         })
         .collect::<HashSet<Point3>>();
     all_beacons.len() as u32
-}
-
-fn manhattan_distance(a: &Point3, b: &Point3) -> i32 {
-    (b.x - a.x).abs() + (b.y - a.y).abs() + (b.z - a.z).abs()
 }
 
 fn p2(scanners: &HashMap<u32, Scanner>) -> i32 {
