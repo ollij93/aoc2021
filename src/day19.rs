@@ -1,6 +1,7 @@
 // Solutions for day19 of Advent of Code
 
 use crate::point::Volume;
+use std::cmp::max;
 use std::collections::HashMap;
 use std::collections::HashSet;
 use std::str::FromStr;
@@ -81,11 +82,7 @@ impl Orientation {
                 y: -y,
                 z: -x,
             },
-            Orientation::NegZNegX => Point3 {
-                x: -z,
-                y: -x,
-                z: y,
-            },
+            Orientation::NegZNegX => Point3 { x: -z, y: -x, z: y },
         }
     }
 
@@ -133,11 +130,7 @@ impl Orientation {
                 y: -y,
                 z: -x,
             },
-            Orientation::NegZNegX => Point3 {
-                x: -y,
-                y: z,
-                z: -x,
-            },
+            Orientation::NegZNegX => Point3 { x: -y, y: z, z: -x },
         }
     }
 }
@@ -305,7 +298,7 @@ fn parse_input(input: &[String]) -> HashMap<u32, Scanner> {
     scanners
 }
 
-fn p1(input: &[String]) -> u32 {
+fn get_all_scanners(input: &[String]) -> HashMap<u32, Scanner> {
     let mut scanners = parse_input(input);
     let mut unknown_idxs: Vec<u32> = scanners.keys().filter(|k| **k > 0).copied().collect();
     let mut known_unchecked: Vec<u32> = vec![0];
@@ -333,16 +326,9 @@ fn p1(input: &[String]) -> u32 {
                             maxy: pos_ori.pos.y + 1000,
                             maxz: pos_ori.pos.z + 1000,
                         },
-                        false
-                        //*unknown_idx == 1,
+                        false, //*unknown_idx == 1,
                     ),
                 };
-                println!(
-                    "{} vs {} : {} possibilities",
-                    known_idx,
-                    unknown_idx,
-                    positions.len()
-                );
                 if positions.len() == 1 {
                     let pos_ori = positions.iter().cloned().collect::<Vec<PosOri>>()[0];
                     Some((unknown_scanner.idx, pos_ori))
@@ -372,15 +358,15 @@ fn p1(input: &[String]) -> u32 {
 
         known_checked.push(known_idx);
     }
+    scanners
+}
 
-    for scanner in scanners.values() {
-        println!("{} {:?}", scanner.idx, scanner.known_position);
-    }
-    let all_beacons = known_checked
-        .iter()
-        .flat_map(|name| match scanners[name].known_position {
+fn p1(scanners: &HashMap<u32, Scanner>) -> u32 {
+    let all_beacons = scanners
+        .keys()
+        .flat_map(|idx| match scanners[idx].known_position {
             None => panic!(),
-            Some(pos_ori) => scanners[name]
+            Some(pos_ori) => scanners[idx]
                 .beacons
                 .iter()
                 .map(move |p| pos_ori.ori.rel_to_world(p) + &pos_ori.pos),
@@ -389,20 +375,40 @@ fn p1(input: &[String]) -> u32 {
     all_beacons.len() as u32
 }
 
-fn p2(input: &[String]) -> u32 {
-    0
+fn manhattan_distance(a: &Point3, b: &Point3) -> i32 {
+    (b.x - a.x).abs() + (b.y - a.y).abs() + (b.z - a.z).abs()
+}
+
+fn p2(scanners: &HashMap<u32, Scanner>) -> i32 {
+    scanners.keys().fold(0, |mx, scanner_a| {
+        max(
+            mx,
+            scanners.keys().fold(0, |submx, scanner_b| {
+                max(
+                    submx,
+                    manhattan_distance(
+                        &scanners[scanner_a].known_position.unwrap().pos,
+                        &scanners[scanner_b].known_position.unwrap().pos,
+                    ),
+                )
+            }),
+        )
+    })
 }
 
 pub fn run(input: Vec<String>) -> u128 {
     println!("=== DAY 19 ===");
 
-    let (a, timea) = run_and_print_time(p1, &input);
+    let (scanners, time_scanners) = run_and_print_time(get_all_scanners, &input);
+    println!("Got scanners.");
+
+    let (a, timea) = run_and_print_time(p1, &scanners);
     println!("Part1: {}", a);
 
-    let (b, timeb) = run_and_print_time(p2, &input);
+    let (b, timeb) = run_and_print_time(p2, &scanners);
     println!("Part2: {}", b);
 
-    timea + timeb
+    time_scanners + timea + timeb
 }
 
 #[cfg(test)]
