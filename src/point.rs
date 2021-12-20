@@ -1,3 +1,7 @@
+use std::fmt::Debug;
+use std::fmt::Formatter;
+use std::ops::Add;
+use std::ops::Sub;
 use std::str::FromStr;
 
 #[derive(Debug, Clone, Hash, Eq, PartialEq)]
@@ -21,4 +25,97 @@ impl FromStr for Point {
         }
     }
     type Err = ();
+}
+
+#[derive(Copy, Clone, Hash, Eq, PartialEq)]
+pub struct Point3 {
+    pub x: i32,
+    pub y: i32,
+    pub z: i32,
+}
+
+impl FromStr for Point3 {
+    fn from_str(s: &str) -> std::result::Result<Self, ()> {
+        match s.split_once(",") {
+            None => Err(()),
+            Some((xstr, yzstr)) => match yzstr.split_once(",") {
+                None => Err(()),
+                Some((ystr, zstr)) => {
+                    let x = xstr.parse::<i32>();
+                    let y = ystr.parse::<i32>();
+                    let z = zstr.parse::<i32>();
+                    match (x, y, z) {
+                        (Ok(x), Ok(y), Ok(z)) => Ok(Point3 { x, y, z }),
+                        _ => Err(()),
+                    }
+                }
+            },
+        }
+    }
+    type Err = ();
+}
+impl Debug for Point3 {
+    fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), std::fmt::Error> {
+        write!(f, "{},{},{}", self.x, self.y, self.z)
+    }
+}
+
+impl<'a> Add<&'a Point3> for Point3 {
+    type Output = Point3;
+    fn add(self, other: &'a Point3) -> Point3 {
+        Point3 {
+            x: self.x + other.x,
+            y: self.y + other.y,
+            z: self.z + other.z,
+        }
+    }
+}
+impl Sub<Point3> for Point3 {
+    type Output = Point3;
+    fn sub(self, other: Point3) -> Point3 {
+        Point3 {
+            x: self.x - other.x,
+            y: self.y - other.y,
+            z: self.z - other.z,
+        }
+    }
+}
+impl<'a> Sub<&'a Point3> for Point3 {
+    type Output = Point3;
+    fn sub(self, other: &'a Point3) -> Point3 {
+        Point3 {
+            x: self.x - other.x,
+            y: self.y - other.y,
+            z: self.z - other.z,
+        }
+    }
+}
+impl<'a, 'b> Sub<&'a Point3> for &'b Point3 {
+    type Output = Point3;
+    fn sub(self, other: &'a Point3) -> Point3 {
+        Point3 {
+            x: self.x - other.x,
+            y: self.y - other.y,
+            z: self.z - other.z,
+        }
+    }
+}
+
+pub struct Volume {
+    pub minx: i32,
+    pub miny: i32,
+    pub minz: i32,
+    pub maxx: i32,
+    pub maxy: i32,
+    pub maxz: i32,
+}
+impl Volume {
+    pub fn contains(&self, point: &Point3) -> bool {
+        self.minx <= point.x
+            && point.x <= self.maxx
+            && self.miny <= point.y
+            && point.y <= self.maxy
+            && self.minz <= point.z
+            && point.z <= self.maxz
+    }
 }
