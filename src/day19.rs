@@ -85,54 +85,6 @@ impl Orientation {
             Orientation::NegZNegX => Point3 { x: -z, y: -x, z: y },
         }
     }
-
-    fn world_to_rel(&self, worldpos: &Point3) -> Point3 {
-        let (x, y, z) = (worldpos.x, worldpos.y, worldpos.z);
-        match self {
-            // Facing along X
-            Orientation::PosXPosY => Point3 { x, y, z },
-            Orientation::PosXPosZ => Point3 { x, y: -z, z: y },
-            Orientation::PosXNegY => Point3 { x, y: -y, z: -z },
-            Orientation::PosXNegZ => Point3 { x, y: z, z: -y },
-            // Facing along Y
-            Orientation::PosYPosX => Point3 { x: y, y: x, z: -z },
-            Orientation::PosYPosZ => Point3 { x: z, y: x, z: y },
-            Orientation::PosYNegX => Point3 { x: -y, y: x, z },
-            Orientation::PosYNegZ => Point3 { x: -z, y: x, z: -y },
-            // Facing along Z
-            Orientation::PosZPosY => Point3 { x: -z, y, z: x },
-            Orientation::PosZPosX => Point3 { x: y, y: z, z: x },
-            Orientation::PosZNegY => Point3 { x: z, y: -y, z: x },
-            Orientation::PosZNegX => Point3 { x: -y, y: -z, z: x },
-            // Facing along negative X
-            Orientation::NegXPosY => Point3 { x: -x, y, z: -z },
-            Orientation::NegXPosZ => Point3 { x: -x, y: z, z: y },
-            Orientation::NegXNegY => Point3 { x: -x, y: -y, z },
-            Orientation::NegXNegZ => Point3 {
-                x: -x,
-                y: -z,
-                z: -y,
-            },
-            // Facing along Y
-            Orientation::NegYPosX => Point3 { x: y, y: -x, z },
-            Orientation::NegYPosZ => Point3 { x: -z, y: -x, z: y },
-            Orientation::NegYNegX => Point3 {
-                x: -y,
-                y: -x,
-                z: -z,
-            },
-            Orientation::NegYNegZ => Point3 { x: z, y: -x, z: -y },
-            // Facing along Z
-            Orientation::NegZPosY => Point3 { x: z, y, z: -x },
-            Orientation::NegZPosX => Point3 { x: y, y: -z, z: -x },
-            Orientation::NegZNegY => Point3 {
-                x: -z,
-                y: -y,
-                z: -x,
-            },
-            Orientation::NegZNegX => Point3 { x: -y, y: z, z: -x },
-        }
-    }
 }
 
 fn all_orientations(relpos: &Point3) -> Vec<PosOri> {
@@ -424,42 +376,6 @@ mod tests {
                 .collect::<HashSet<Point3>>()
                 .len(),
             24
-        )
-    }
-
-    #[test]
-    fn test_translation() {
-        assert_eq!(
-            all_orientations(&Point3 { x: 1, y: 2, z: 3 })
-                .iter()
-                .map(|wpo| wpo.ori.world_to_rel(&wpo.pos))
-                .collect::<Vec<Point3>>(),
-            vec![
-                Point3 { x: 1, y: 2, z: 3 },
-                Point3 { x: 1, y: 2, z: 3 },
-                Point3 { x: 1, y: 2, z: 3 },
-                Point3 { x: 1, y: 2, z: 3 },
-                Point3 { x: 1, y: 2, z: 3 },
-                Point3 { x: 1, y: 2, z: 3 },
-                Point3 { x: 1, y: 2, z: 3 },
-                Point3 { x: 1, y: 2, z: 3 },
-                Point3 { x: 1, y: 2, z: 3 },
-                Point3 { x: 1, y: 2, z: 3 },
-                Point3 { x: 1, y: 2, z: 3 },
-                Point3 { x: 1, y: 2, z: 3 },
-                Point3 { x: 1, y: 2, z: 3 },
-                Point3 { x: 1, y: 2, z: 3 },
-                Point3 { x: 1, y: 2, z: 3 },
-                Point3 { x: 1, y: 2, z: 3 },
-                Point3 { x: 1, y: 2, z: 3 },
-                Point3 { x: 1, y: 2, z: 3 },
-                Point3 { x: 1, y: 2, z: 3 },
-                Point3 { x: 1, y: 2, z: 3 },
-                Point3 { x: 1, y: 2, z: 3 },
-                Point3 { x: 1, y: 2, z: 3 },
-                Point3 { x: 1, y: 2, z: 3 },
-                Point3 { x: 1, y: 2, z: 3 },
-            ]
         )
     }
 }

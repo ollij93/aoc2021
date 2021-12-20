@@ -27,6 +27,29 @@ impl FromStr for Point {
     type Err = ();
 }
 
+#[derive(Debug, Clone, Hash, Eq, PartialEq)]
+pub struct PointI {
+    pub x: i32,
+    pub y: i32,
+}
+
+impl FromStr for PointI {
+    fn from_str(s: &str) -> std::result::Result<Self, ()> {
+        match s.split_once(",") {
+            None => Err(()),
+            Some((xstr, ystr)) => {
+                let x = xstr.parse::<i32>();
+                let y = ystr.parse::<i32>();
+                match (x, y) {
+                    (Ok(x), Ok(y)) => Ok(PointI { x, y }),
+                    _ => Err(()),
+                }
+            }
+        }
+    }
+    type Err = ();
+}
+
 #[derive(Copy, Clone, Hash, Eq, PartialEq)]
 pub struct Point3 {
     pub x: i32,
