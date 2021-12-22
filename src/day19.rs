@@ -229,7 +229,7 @@ fn calculate_manhattans(points: &HashSet<Point3>) -> HashSet<i32> {
     (0..points.len())
         .map(|idx1| {
             (idx1 + 1..points.len())
-                .map(|idx2| manhattan_distance(&pointsvec[idx1], &pointsvec[idx2]))
+                .map(|idx2| manhattan_distance(pointsvec[idx1], pointsvec[idx2]))
                 .collect::<Vec<i32>>()
         })
         .flatten()
